@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Psy Protocol — An Independent Research Brief</title>
+
+<!-- SEO · GEO -->
+<meta name="description" content="A third-party technical and ecosystem analysis of Psy Protocol: a ZK-native L1 built on Plonky2 recursive proofs, Poseidon over Goldilocks, sharded PARTH execution, shielded payments, and an x402-native AI agent stack." />
+<meta name="keywords" content="Psy Protocol, ZK blockchain, Plonky2, Poseidon, Goldilocks, recursive proofs, PARTH, shielded pool, x402, AI agent payments, USDT_P, Carter Feldman, QED Protocol" />
+<meta name="author" content="Independent research — Psyverse Brief" />
+<link rel="canonical" href="https://psy-research.psyverse.fun/" />
+<link rel="alternate" hreflang="en" href="https://psy-research.psyverse.fun/" />
+<link rel="alternate" hreflang="zh-CN" href="https://psy-research.psyverse.fun/" />
+<link rel="alternate" hreflang="x-default" href="https://psy-research.psyverse.fun/" />
+<meta property="og:title" content="Psy Protocol — An Independent Research Brief" />
+<meta property="og:description" content="Third-party deep dive on Psy: PARTH sharding, Plonky2 recursion, shielded payments, the TRON/EVM bridge, and an x402-native agent economy." />
+<meta property="og:url" content="https://psy-research.psyverse.fun/" />
+<meta property="og:site_name" content="Psyverse" />
+<meta property="og:type" content="article" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="zh_CN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Psy Protocol — An Independent Research Brief" />
+<meta name="twitter:description" content="A third-party deep-dive on Psy: recursive ZK execution, shielded payments, and an x402-native agent economy." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0b0d0c" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Psy Protocol — An Independent Research Brief",
+  "description": "Third-party technical and ecosystem analysis of Psy Protocol.",
+  "url": "https://psy-research.psyverse.fun/",
+  "inLanguage": ["en", "zh-CN"],
+  "datePublished": "2026-05-16",
+  "author": { "@type": "Organization", "name": "Psyverse Brief" },
+  "publisher": { "@type": "Organization", "name": "Psyverse", "url": "https://psyverse.fun/" }
+}
+</script>
+<!-- /SEO · GEO -->
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230b0d0c'/><text x='50%25' y='54%25' font-family='Georgia,serif' font-size='20' text-anchor='middle' dominant-baseline='middle' fill='%2385e9b8' font-style='italic'>ψ</text></svg>" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,300;1,6..72,400;1,6..72,500;1,6..72,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg:        #0b0d0c;
+    --bg-2:      #0f1311;
+    --surface:   #12171a;
+    --surface-2: #161c1f;
+    --line:      #1e2628;
+    --line-2:    #2a3437;
+    --text:      #e8ecea;
+    --muted:     #8b9794;
+    --dim:       #5a6663;
+    --accent:    #85e9b8;
+    --accent-2:  #61f5b3;
+    --warn:      #f0c674;
+    --red:       #e88a8a;
+    --serif: "Newsreader", "Source Serif Pro", Georgia, "Times New Roman", serif;
+    --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono:  "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    --maxw: 1280px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv01", "cv11";
+  }
+
+  ::selection { background: var(--accent); color: var(--bg); }
+
+  a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--line-2); transition: border-color .15s, color .15s; }
+  a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  code, pre, .mono { font-family: var(--mono); font-size: 13.5px; letter-spacing: -.01em; }
+
+  /* ================= MASTHEAD ================= */
+  .masthead {
+    border-bottom: 1px solid var(--line);
+    padding: 28px 0 22px;
+    background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
+  }
+  .masthead .inner { max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
+  .mh-top {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 24px; margin-bottom: 22px;
+  }
+  .mh-brand {
+    display: flex; align-items: baseline; gap: 14px;
+    font-family: var(--serif); font-size: 22px; font-weight: 500; letter-spacing: .01em;
+  }
+  .mh-brand .psi { font-style: italic; font-weight: 400; color: var(--accent); font-size: 28px; line-height: 1; transform: translateY(2px); }
+  .mh-meta {
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em; display: flex; gap: 18px; align-items: center;
+  }
+  .mh-meta span:not(:last-child)::after { content: "·"; margin-left: 18px; color: var(--dim); }
+  .mh-title {
+    font-family: var(--serif); font-weight: 500; line-height: 1.06; letter-spacing: -.02em;
+    font-size: clamp(40px, 6vw, 76px);
+    margin: 16px 0 14px;
+    color: var(--text);
+  }
+  .mh-title em { font-style: italic; color: var(--accent); font-weight: 500; }
+  .mh-deck {
+    font-family: var(--serif); font-style: italic; font-weight: 300;
+    font-size: clamp(18px, 2vw, 24px); line-height: 1.4;
+    color: var(--muted); max-width: 760px;
+    margin: 0 0 20px;
+  }
+  .mh-bar {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+    border-top: 1px solid var(--line); padding-top: 14px;
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+  }
+  .mh-bar > div { padding-right: 16px; }
+  .mh-bar > div span { display: block; color: var(--text); font-size: 13px; text-transform: none; letter-spacing: 0; margin-top: 3px; font-family: var(--sans); font-weight: 500; }
+
+  /* ================= LAYOUT ================= */
+  main { max-width: var(--maxw); margin: 0 auto; padding: 56px 32px 80px; }
+
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 22px 26px;
+    margin: 0 0 48px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 32px;
+  }
+  .toc h3 {
+    grid-column: 1 / -1;
+    margin: 0 0 10px;
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .15em;
+    color: var(--muted); font-weight: 500;
+  }
+  .toc a {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    padding: 4px 0; border-bottom: none; color: var(--text);
+    font-size: 14.5px;
+  }
+  .toc a .num { font-family: var(--mono); font-size: 11.5px; color: var(--accent); }
+  .toc a .title { flex: 1; }
+  .toc a:hover .title { color: var(--accent); }
+
+  /* ================= SECTIONS ================= */
+  section { margin: 0 0 72px; scroll-margin-top: 24px; }
+
+  .sec-head {
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+    margin-bottom: 28px;
+    display: grid; grid-template-columns: 110px 1fr; gap: 28px; align-items: baseline;
+  }
+  .sec-head .num {
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: .12em; padding-top: 8px;
+  }
+  .sec-head h2 {
+    font-family: var(--serif); font-weight: 500; letter-spacing: -.012em;
+    font-size: clamp(28px, 3.4vw, 42px); line-height: 1.12;
+    margin: 0;
+  }
+  .sec-head h2 em { font-style: italic; color: var(--accent); font-weight: 500; }
+  .sec-body { display: grid; grid-template-columns: 110px 1fr; gap: 28px; }
+  .sec-body > .anchor { font-family: var(--mono); font-size: 10.5px; color: var(--dim); text-transform: uppercase; letter-spacing: .12em; padding-top: 4px; }
+  .sec-body > .col { max-width: 760px; }
+  .sec-body > .col.wide { max-width: none; }
+
+  p { margin: 0 0 1.05em; }
+  .sec-body p, .sec-body li { font-size: 16.5px; line-height: 1.7; }
+  .lede { font-family: var(--serif); font-size: 21px; line-height: 1.55; color: var(--text); margin-bottom: 1.2em; font-weight: 400; }
+  .lede::first-letter {
+    font-family: var(--serif); font-style: italic;
+    font-size: 4em; float: left; line-height: .85;
+    padding: 6px 8px 0 0; color: var(--accent); font-weight: 500;
+  }
+
+  h3 {
+    font-family: var(--serif); font-weight: 600; font-size: 20px; line-height: 1.3;
+    margin: 32px 0 12px; color: var(--text);
+  }
+  h4 {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: .14em; color: var(--muted);
+    margin: 26px 0 10px;
+  }
+  strong { color: var(--text); font-weight: 600; }
+  em { color: var(--text); }
+
+  ul, ol { padding-left: 22px; margin: 0 0 1.2em; }
+  li { margin-bottom: .35em; }
+  li::marker { color: var(--accent); }
+
+  blockquote {
+    margin: 22px 0; padding: 4px 0 4px 22px;
+    border-left: 2px solid var(--accent);
+    font-family: var(--serif); font-style: italic;
+    font-size: 18.5px; line-height: 1.55; color: var(--text);
+  }
+  blockquote cite { display: block; margin-top: 10px; font-size: 12px; font-style: normal; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+
+  /* code blocks */
+  pre {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: 12.5px; line-height: 1.55;
+    color: var(--muted);
+    margin: 18px 0 22px;
+  }
+  pre .h { color: var(--text); }
+  pre .a { color: var(--accent); }
+  pre .c { color: var(--dim); font-style: italic; }
+  pre .y { color: var(--warn); }
+  code:not(pre code) {
+    background: var(--surface); padding: 1px 6px; border-radius: 2px;
+    border: 1px solid var(--line); color: var(--accent-2); font-size: .88em;
+  }
+
+  /* tables */
+  table {
+    width: 100%; border-collapse: collapse; margin: 18px 0 26px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left; padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    font-family: var(--mono); font-weight: 500; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); border-bottom: 1px solid var(--line-2);
+    padding-top: 6px; padding-bottom: 8px;
+  }
+  tr:hover td { background: rgba(133, 233, 184, .02); }
+  td .mono, td code { font-size: 12.5px; }
+  td .tag { font-family: var(--mono); font-size: 10.5px; padding: 2px 7px; border-radius: 2px; background: var(--surface); border: 1px solid var(--line-2); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; display: inline-block; }
+  td .tag.ok { color: var(--accent); border-color: rgba(133,233,184,.3); }
+  td .tag.wip { color: var(--warn); border-color: rgba(240,198,116,.3); }
+  td .tag.early { color: var(--red); border-color: rgba(232,138,138,.3); }
+
+  /* callouts */
+  .callout {
+    background: var(--surface);
+    border-left: 2px solid var(--accent);
+    padding: 16px 20px;
+    margin: 22px 0;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .callout h4 { margin: 0 0 6px; color: var(--accent); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.warn h4 { color: var(--warn); }
+
+  /* diagrams */
+  pre.diagram {
+    background: transparent; border-color: var(--line-2);
+    color: var(--text); font-size: 11.5px; line-height: 1.6;
+    padding: 22px; white-space: pre;
+  }
+
+  /* stat grid */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 22px 0 28px; }
+  .stat { background: var(--bg); padding: 18px 20px; }
+  .stat .label { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 6px; }
+  .stat .val { font-family: var(--serif); font-size: 26px; font-weight: 500; color: var(--text); line-height: 1.1; }
+  .stat .val small { font-size: 14px; color: var(--muted); font-weight: 400; font-family: var(--sans); margin-left: 4px; }
+
+  /* footnotes */
+  sup.fn { color: var(--accent); font-size: .75em; padding: 0 1px 0 2px; font-family: var(--mono); }
+  sup.fn a { color: var(--accent); border: none; }
+
+  /* footer */
+  footer {
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+    padding: 40px 32px 60px;
+    max-width: var(--maxw);
+    margin-left: auto; margin-right: auto;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  footer .row { display: grid; grid-template-columns: 110px 1fr 1fr 1fr; gap: 28px; }
+  footer h5 { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .14em; color: var(--dim); margin: 0 0 10px; font-weight: 500; }
+  footer ul { padding: 0; list-style: none; margin: 0; }
+  footer li { margin: 4px 0; }
+  footer a { color: var(--text); border: none; }
+  footer a:hover { color: var(--accent); }
+  footer .colophon {
+    grid-column: 2 / -1;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-family: var(--serif); font-style: italic; color: var(--muted);
+    font-size: 13.5px; line-height: 1.55;
+  }
+
+  /* mobile */
+  @media (max-width: 820px) {
+    .sec-head, .sec-body { grid-template-columns: 1fr; gap: 0; }
+    .sec-head .num { padding-top: 0; margin-bottom: 8px; }
+    .sec-body > .anchor { display: none; }
+    .toc { grid-template-columns: 1fr; }
+    .mh-bar { grid-template-columns: 1fr 1fr; gap: 14px 0; }
+    .mh-bar > div { padding: 0; }
+    footer .row { grid-template-columns: 1fr 1fr; }
+    footer .colophon { grid-column: 1 / -1; }
+    main { padding: 36px 22px 48px; }
+    .masthead .inner { padding: 0 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="inner">
+    <div class="mh-top">
+      <div class="mh-brand"><span class="psi">ψ</span> Psyverse Brief</div>
+      <div class="mh-meta">
+        <span>Volume 01 · No. 12</span>
+        <span>2026-05-16</span>
+        <span>Independent Research</span>
+      </div>
+    </div>
+
+    <h1 class="mh-title">Psy Protocol: a recursive-ZK chain looking for an <em>economic gravity well</em>.</h1>
+    <p class="mh-deck">A third-party reading of one of the more idiosyncratic L1 designs in the post-rollup wave — recursive Plonky2 execution, Poseidon-over-Goldilocks state, sharded PARTH realms, a shielded UTXO layer, and an x402-native agent stack — and the structural bets each piece is making.</p>
+
+    <div class="mh-bar">
+      <div>Subject<span>Psy Protocol (ψ)</span></div>
+      <div>Classification<span>L1 · ZK-native · sharded</span></div>
+      <div>Stage<span>Public testnet / pre-mainnet</span></div>
+      <div>Posture<span>Constructive — long protocol, short timeline</span></div>
+      <div>Length<span>~5,400 words · 13 sections</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <nav class="toc" aria-label="Contents">
+    <h3>Contents</h3>
+    <a href="#tldr"><span class="num">00</span><span class="title">Executive summary</span></a>
+    <a href="#thesis"><span class="num">01</span><span class="title">Where Psy fits</span></a>
+    <a href="#parth"><span class="num">02</span><span class="title">PARTH architecture</span></a>
+    <a href="#proving"><span class="num">03</span><span class="title">The proving stack</span></a>
+    <a href="#language"><span class="num">04</span><span class="title">Psy-lang and the compiler</span></a>
+    <a href="#privacy"><span class="num">05</span><span class="title">Shielded payments</span></a>
+    <a href="#bridge"><span class="num">06</span><span class="title">The bridge problem</span></a>
+    <a href="#x402"><span class="num">07</span><span class="title">x402 and the AI tower</span></a>
+    <a href="#inventory"><span class="num">08</span><span class="title">Stack inventory</span></a>
+    <a href="#performance"><span class="num">09</span><span class="title">The performance argument</span></a>
+    <a href="#risks"><span class="num">10</span><span class="title">Open questions and risks</span></a>
+    <a href="#bottom"><span class="num">11</span><span class="title">Bottom line</span></a>
+  </nav>
+
+  <!-- =================================================== -->
+  <section id="tldr">
+    <div class="sec-head">
+      <div class="num">§ 00</div>
+      <h2>Executive <em>summary</em></h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">TL;DR</div>
+      <div class="col">
+        <p class="lede">Psy is one of the few new L1s that treats <em>recursive zero-knowledge proofs as the substrate of execution itself</em>, not a bolt-on optimization. Most of what is interesting — and most of what is risky — flows from that one choice.</p>
+
+        <ul>
+          <li><strong>Architecture.</strong> A coordinator orchestrates a fleet of <em>realm</em> shards (128 at testnet, designed for 1,000+) running a <code>Gather → Update → Test → Aggregate</code> pipeline. Workers mine Plonky2 proofs for transactions; the coordinator finalizes by recursively folding realm proofs into a single block proof.</li>
+          <li><strong>Cryptography.</strong> Plonky2 over the Goldilocks field <span class="mono">(p = 2⁶⁴ − 2³² + 1)</span>, Poseidon hashing, Merkle trees of height 32. Browser-side proving via a ~6 MB WASM prover.</li>
+          <li><strong>Privacy.</strong> A shielded UTXO pool sits alongside the transparent ledger. Notes are Poseidon commitments; spends are nullifier-based; transfers are Plonky2-proven. <code>USDT_P</code> is the in-network form of bridged USDT.</li>
+          <li><strong>Bridge.</strong> Two-way deposits/withdrawals against TRON and EVM, with M-of-N relayers, on-chain checkpoint roots, and <em>force-withdraw</em> as a censorship escape hatch. SP1 (EVM) and Groth16 (TRON) circuits adapt the recursive Plonky2 proof for cheap L1 verification.</li>
+          <li><strong>Distribution thesis.</strong> Psy is betting that <em>HTTP-native, agent-mediated payments</em> — the x402 protocol — become the dominant payment surface of the AI era, and that <em>private</em> x402 is a unique slot only a ZK chain can occupy.</li>
+          <li><strong>Where it is, honestly.</strong> Compiler, node, prover, wallet, IDE, explorer are 80–90% built. The bridge is the bottleneck (~15% coded against a complete spec). Privacy is ~30%. x402 and the agent tower are 0% but well-scoped. Mainnet target is 2027 H1–H2.</li>
+        </ul>
+
+        <p>This brief argues that Psy is technically credible and structurally distinctive, but that its commercial future depends almost entirely on closing two gaps: <em>bridge liquidity</em> (no users without it) and <em>a believable agent-economy wedge</em> (no growth without it). Everything else is downstream of those two.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="thesis">
+    <div class="sec-head">
+      <div class="num">§ 01</div>
+      <h2>Where Psy <em>fits</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Positioning</div>
+      <div class="col">
+        <p>The 2024–2026 L1/L2 wave produced four broad families of new chains. Psy reads cleanly against the taxonomy:</p>
+
+        <table>
+          <thead>
+            <tr><th>Family</th><th>Examples</th><th>Bet</th><th>Where Psy diverges</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>EVM L2s</strong></td>
+              <td>Arbitrum, Base, Optimism</td>
+              <td>Cheaper Ethereum.</td>
+              <td>Psy is not Ethereum and not EVM. Its security model is recursive ZK over its own state, not an Ethereum settlement attestation.</td>
+            </tr>
+            <tr>
+              <td><strong>ZK L2s</strong></td>
+              <td>zkSync, Linea, Scroll</td>
+              <td>Cheaper Ethereum + ZK roll-up.</td>
+              <td>Psy uses ZK to <em>shard execution</em>, not to compress an EVM trace.</td>
+            </tr>
+            <tr>
+              <td><strong>Alt-L1s</strong></td>
+              <td>Solana, Aptos, Sui, Monad</td>
+              <td>New consensus + new VM = throughput.</td>
+              <td>Psy's TPS argument is structural (recursion), not parallel-runtime micro-optimization.</td>
+            </tr>
+            <tr>
+              <td><strong>Privacy chains</strong></td>
+              <td>Aztec, Penumbra, Aleo</td>
+              <td>Private state by default.</td>
+              <td>Psy is closer in spirit, but separates a transparent rail (for ordinary payments and dApps) from a shielded pool (for private flows). Both share one prover and one block.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>The single sentence that best captures the design: <em>Psy uses recursive zero-knowledge proofs to make <strong>verification cost asymptotically flat</strong> as execution scales horizontally.</em> Nodes don't re-execute transactions; they verify a recursively-folded proof that the right execution happened, somewhere, against the right state. Throughput scales by adding realms; verification cost stays roughly constant.</p>
+
+        <p>That puts Psy in conversation with <em>recursive-proof rollup substrates</em> (Polygon zkEVM, RISC Zero's Boundless, Succinct's SP1 prover network) more than with bespoke "ZK chains" that mostly use ZK for privacy and transparency for everything else. The lineage is visible in the codebase: a <code>psy_sp1_plonky2_adapter</code> crate converts Plonky2 proofs into SP1-shaped Groth16 proofs for cheap L1 verification on EVM — i.e. Psy is happy to compose with the broader recursive-proof economy rather than reinvent it end-to-end.</p>
+
+        <h3>What makes the design <em>idiosyncratic</em></h3>
+        <ul>
+          <li><strong>Own VM, own language.</strong> Not EVM, not Move, not WASM. <em>Psy-lang</em> is a domain-specific language that compiles directly to Plonky2 circuit constraints — every contract is, by construction, ZK-friendly.</li>
+          <li><strong>Goldilocks-native state.</strong> The state Merkle tree, the hash function (Poseidon), the prover, the language, and the wallet all speak the same field. There is no "translate from EVM to ZK" step; the chain is field-native end to end.</li>
+          <li><strong>Coordinator + realms ≠ classic sharding.</strong> Cross-realm composition is mediated by ZK proofs of state transitions, not by an asynchronous message-passing fabric. This is closer in spirit to a fleet of independent rollups settling to a shared coordinator than to traditional sharded BFT.</li>
+          <li><strong>Browser-side proving as a first-class feature.</strong> The WASM prover is ~6 MB and ships in the wallet. Users prove their own transactions; relayers mostly carry bits, not trust.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="parth">
+    <div class="sec-head">
+      <div class="num">§ 02</div>
+      <h2>The PARTH <em>architecture</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Topology</div>
+      <div class="col wide">
+        <p>The node implementation lives across two related crate trees: <code>parth-generic-v1</code> (the canonical PARTH reference; ~40 Rust crates) and <code>psy-v3</code> (the "mainnet-beta" iteration that strips PARTH down to a leaner, productionizable subset). PARTH stands for <strong>P</strong>roving-<strong>A</strong>ware <strong>R</strong>ollup with <strong>T</strong>iered <strong>H</strong>ierarchy — the name describes both the topology and the proof flow.</p>
+
+        <pre class="diagram"><span class="c">                ┌──────────────────────────────────────┐
+                │           COORDINATOR  NODE          │
+                │  ┌────────────┐   ┌────────────────┐  │
+                │  │  edge RPC  │   │  processor      │ │
+                │  │  :1337     │   │  + finalizer    │ │
+                │  └────────────┘   └────────────────┘  │
+                │            recursive aggregation       │
+                └────────▲──────────────▲────────────────┘
+                         │              │
+        ┌────────────────┴───┐      ┌───┴────────────────┐
+        │   REALM 0           │      │   REALM 1           │      ...   REALM N
+        │  processor + edge   │      │  processor + edge   │
+        │  :13380             │      │  :13390             │
+        │  ▲ GUTA pipeline    │      │  ▲ GUTA pipeline    │
+        │  │ Gather → Update  │      │  │ Gather → Update  │
+        │  │   → Test → Aggreg.│     │  │   → Test → Aggreg.│
+        │  ▼                  │      │  ▼                  │
+        │  workers (Plonky2)  │      │  workers (Plonky2)  │
+        └─────────────────────┘      └─────────────────────┘
+                         │              │
+                ┌────────┴──────────────┴────────┐
+                │  ScyllaDB · Redis · NATS JS    │
+                │  state · cache · messaging      │
+                └─────────────────────────────────┘</span></pre>
+
+        <h3>Roles</h3>
+        <ul>
+          <li><strong>Coordinator.</strong> A globally-unique role that finalizes blocks by aggregating realm proofs into a single root proof. Maintains the checkpoint registry exposed to L1 bridges.</li>
+          <li><strong>Realm nodes.</strong> Sharded execution domains. Each realm owns a contiguous range of user accounts (testnet config: <code>users_per_realm = 2²⁰ = 1,048,576</code>) and processes its transactions independently. Realms gossip state-root commitments to the coordinator each block.</li>
+          <li><strong>Workers.</strong> Stateless proof miners. A worker pulls a transaction job from the queue, generates a Plonky2 proof of correct execution, and returns it. Workers are paid in protocol fees and are the natural locus of decentralized proving.</li>
+          <li><strong>Edge processes.</strong> Public RPC frontends that fan out to the internal processors. They're what wallets and SDKs actually talk to.</li>
+        </ul>
+
+        <h3>The GUTA pipeline</h3>
+        <p>Every block, in every realm, runs four phases:</p>
+        <ol>
+          <li><strong>Gather.</strong> Pull pending transactions, fetch their input state from ScyllaDB, batch them for the workers.</li>
+          <li><strong>Update.</strong> Apply transactions in the deterministic ordering rule. Output: a candidate post-state and a per-transaction execution trace.</li>
+          <li><strong>Test.</strong> Workers generate Plonky2 proofs for each trace. Failed proofs trigger a re-execution; the worker stake is at risk.</li>
+          <li><strong>Aggregate.</strong> Recursively fold all transaction proofs in the realm into a single realm proof. Push the realm proof up to the coordinator.</li>
+        </ol>
+
+        <p>The coordinator does the same recursive aggregation one level up — folding N realm proofs into a single block proof. The result is the property the design needs: <em>verification cost grows logarithmically (and in practice nearly flat) in the number of transactions per block</em>. Adding a 129th realm doesn't change what a light client has to check.</p>
+
+        <h3>Storage and messaging</h3>
+        <div class="stats">
+          <div class="stat"><div class="label">State store</div><div class="val">ScyllaDB <small>6.0 ARM64</small></div></div>
+          <div class="stat"><div class="label">Cache + queues</div><div class="val">Valkey / Redis</div></div>
+          <div class="stat"><div class="label">Inter-node bus</div><div class="val">NATS <small>JetStream</small></div></div>
+          <div class="stat"><div class="label">Realm range</div><div class="val">128 → 1,000+</div></div>
+          <div class="stat"><div class="label">Users/realm</div><div class="val">1,048,576</div></div>
+          <div class="stat"><div class="label">Target UOPS<sup class="fn">1</sup></div><div class="val">100 K<small>/realm</small></div></div>
+        </div>
+
+        <p class="mono" style="color:var(--dim); font-size:11.5px; margin-top:-12px;">1. UOPS = "user operations per second" — Psy's preferred unit, since a single user request can produce multiple internal transactions. At 1,000 realms × 100K UOPS, the design envelope is ~100 M UOPS, but the team's stated posture is that this number is a <em>capacity</em> claim, not a marketing TPS number.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="proving">
+    <div class="sec-head">
+      <div class="num">§ 03</div>
+      <h2>The proving <em>stack</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Cryptography</div>
+      <div class="col">
+        <p>Psy is opinionated about its cryptographic primitives in a way most chains aren't. The whole stack speaks one prover, one field, one hash:</p>
+
+        <table>
+          <thead><tr><th>Layer</th><th>Choice</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Proof system</td><td><strong>Plonky2</strong> (recursive)</td><td>Sub-second prover, recursion-friendly, no trusted setup, designed for the Goldilocks field.</td></tr>
+            <tr><td>Field</td><td><strong>Goldilocks</strong> <span class="mono">p = 2⁶⁴ − 2³² + 1</span></td><td>64-bit, FFT-friendly, with cheap modular reduction on commodity CPUs. Native fit for Plonky2.</td></tr>
+            <tr><td>Hash</td><td><strong>Poseidon</strong></td><td>Algebraic hash with low circuit complexity. Used for Merkle tree, commitments, signatures.</td></tr>
+            <tr><td>Merkle tree</td><td>height 32, Poseidon-hashed</td><td>4 B leaf capacity; logarithmic membership proofs.</td></tr>
+            <tr><td>Browser prover</td><td><strong>WASM</strong> (~6 MB binary)</td><td>Users generate their own UPS proofs locally, before submitting to the realm.</td></tr>
+            <tr><td>EVM-side adapter</td><td><strong>SP1 → Groth16</strong></td><td>For L1 bridge verification, a Plonky2 proof is wrapped through SP1 and emitted as a Groth16 proof cheap enough for the EVM to verify (~250K gas).</td></tr>
+            <tr><td>TRON-side adapter</td><td><strong>Groth16</strong> via gnark-plonky2-verifier</td><td>Direct Groth16 verifier for TVM-compatible verification.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>UPS and DPN circuits</h3>
+        <p>Two circuit families do most of the work:</p>
+        <ul>
+          <li><strong>UPS (User Proving Session).</strong> Proves that a user authorized a sequence of operations against their account state. Lives in the wallet's WASM prover. Inputs: signature, current state root, operation list. Output: a UPS proof the realm can consume without re-checking the signature on chain.</li>
+          <li><strong>DPN circuits.</strong> Per-contract execution circuits. The compiler emits one DPN circuit per Psy-lang contract. Inputs: contract storage commitments, call args. Output: a proof of correct contract execution and a post-state commitment.</li>
+        </ul>
+
+        <p>A complete block proof is, schematically:</p>
+        <pre><span class="c">// pseudo-recursion at the realm level</span>
+<span class="h">RealmProof</span> := <span class="a">recursive_aggregate</span>(
+  [ <span class="h">UPS</span>(tx<sub>i</sub>) ⊕ <span class="h">DPN</span>(contract, args<sub>i</sub>) for tx<sub>i</sub> in block ]
+)
+
+<span class="c">// and at the coordinator level</span>
+<span class="h">BlockProof</span> := <span class="a">recursive_aggregate</span>(
+  [ RealmProof<sub>r</sub> for r in active_realms ]
+)</pre>
+
+        <p>The interesting property: a verifier (a light client, a bridge contract, a coordinator) only ever checks the <em>outermost</em> proof. The recursive structure compresses an arbitrary number of underlying executions into a constant-size verification cost.</p>
+
+        <h3>The cost reality</h3>
+        <p>The trade is real and worth being honest about. Plonky2 proof generation is <em>slow</em> compared to executing an EVM transaction — testnet block times observed in this codebase are ~10–30 seconds when real proofs are produced, versus ~8 seconds in the older JTMB (just-trust-me-bro) mock prover. That is the cost of moving from "execute and replay" to "execute, prove, recursively fold." It is also why the design needs aggressive worker parallelism and why the team is explicit that GPU-accelerated proving is on the post-mainnet roadmap.</p>
+
+        <div class="callout">
+          <h4>Operational note</h4>
+          <p style="margin:0;">A subtle implementation issue surfaced during integration testing: the WASM browser prover and the native worker prover must be built from byte-identical circuit definitions, otherwise the verifying key mismatches the proof and transactions fail with a <code>VirtualTarget</code> error. The repo carries a known fingerprint-drift issue between <code>psy_user_cli</code> and <code>psy_node_cli</code> binaries built at different times. This is a normal pre-mainnet engineering problem, but it points to how tightly coupled <em>everything</em> in this stack is to one specific circuit hash.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="language">
+    <div class="sec-head">
+      <div class="num">§ 04</div>
+      <h2>Psy-lang and the <em>compiler</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">DevEx</div>
+      <div class="col">
+        <p>A custom language is usually a yellow flag in a new chain. The reasonable question is "why didn't you just take EVM or Move?" Psy's answer is structural: because every contract must compile to a Plonky2 circuit, and bolting a circuit backend onto a general-purpose VM is a worse engineering problem than designing the surface language around the constraints from the start.</p>
+
+        <p>The <code>psy-compiler</code> repo bears this out. It is a complete, production-shaped toolchain across twelve crates: <code>psy-lexer</code>, <code>psy-parser</code> (LALRPOP-driven), <code>psy-ast</code>, <code>psy-sema</code>, <code>psy-interpreter</code>, <code>psy-abi</code>, <code>psy-fmt</code>, <code>psy-lsp-server</code>, <code>psy-precompiles</code>, <code>psy-std</code>, <code>psy-package</code>, and the <code>psy-dargo-cli</code> entry point. There is a 60+ test integration suite. There is an LSP. There is a formatter. There is a package manager scaffold.</p>
+
+        <p>Two design choices stand out:</p>
+
+        <h3>1 · The compiler produces circuits, not bytecode.</h3>
+        <p>A Psy-lang function does not lower to a stack-machine opcode stream; it lowers to a set of arithmetic constraints over the Goldilocks field. The "VM" is therefore a circuit-execution environment: <code>psy_vm</code> takes a contract circuit and runs it as a constraint system whose satisfaction <em>is</em> the proof of correct execution. This is structurally close to how Aleo's Leo and Aztec's Noir work, and structurally far from how Solidity-on-zkEVM works.</p>
+
+        <h3>2 · The package manager and the wallet share an ABI.</h3>
+        <p>The <code>psy-abi</code> crate is the single source of truth for typed contract interfaces. The wallet, the IDE, the explorer, and the TS SDK all consume ABIs emitted by the compiler, which means a deployed contract is auto-introspectable across the full stack — the explorer can list its methods, the wallet can build typed transactions, the IDE's "deploy and interact" panel can call it without code generation per project.</p>
+
+        <h3>The DX surface</h3>
+        <pre><span class="c">$ dargo new my_payment_app
+  $ dargo build         <span class="c"># lex → parse → sema → circuit-gen</span>
+  $ dargo test          <span class="c"># run unit tests via the interpreter</span>
+  $ dargo deploy        <span class="c"># upload circuit + ABI to a realm</span>
+  $ dargo fmt           <span class="c"># canonicalize style</span></pre>
+
+        <p>The flow is intentionally a Rust-shaped clone — <code>cargo</code> with the letters rotated — because the assumed user is a Solana / Aptos / Aleo developer who already lives in that ergonomic.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="privacy">
+    <div class="sec-head">
+      <div class="num">§ 05</div>
+      <h2>Shielded <em>payments</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Privacy</div>
+      <div class="col">
+        <p>Privacy is implemented as a <em>second rail</em>, not as a default. The transparent ledger handles ordinary payments, contract calls, deposits, and withdrawals. A shielded pool sits next to it for users who want their balances, recipients, and amounts hidden. Both rails share one prover, one block, and one bridge.</p>
+
+        <h3>The shielded pool, mechanically</h3>
+        <p>The shielded pool is a UTXO system on top of an account-model chain — a design choice familiar from Tornado, Aztec, and Penumbra:</p>
+
+        <ul>
+          <li><strong>Notes</strong> are Poseidon commitments of <code>(amount, owner_pk, blinding_factor, nonce)</code>. They live in a single global Merkle tree of height 32.</li>
+          <li><strong>Spends</strong> are <em>nullifiers</em> — deterministic Poseidon hashes of <code>(note_secret, position)</code> — and are recorded on chain so the same note cannot be spent twice. Nullifiers reveal nothing about which note they correspond to.</li>
+          <li><strong>Transfers</strong> are Plonky2 proofs that some unspent note exists in the tree, that the spender knows its secret, and that the output notes preserve the conservation invariant <code>sum(in) = sum(out) + fee</code>.</li>
+        </ul>
+
+        <h3>The three primitive operations</h3>
+        <pre><span class="h">shield</span>(amount, recipient_pk)   <span class="c">// transparent → shielded</span>
+<span class="h">private_transfer</span>(in_notes, out_notes, proof)
+<span class="h">unshield</span>(notes, transparent_recipient, proof)</pre>
+
+        <p>The implementation lives across three repos: <code>private-payments/</code> (cryptographic spec and TS reference client), the privacy circuits inside <code>psy_plonky2_circuits</code>, and the <code>privacy-bridge-demo/</code> UI that exercises the full <code>deposit → shield → private-transfer → unshield → withdraw</code> path on the testnet.</p>
+
+        <p>What's worth pulling out, against the privacy-chain peer set:</p>
+
+        <table>
+          <thead><tr><th>Property</th><th>Tornado Cash</th><th>Aztec</th><th>Penumbra</th><th>Psy</th></tr></thead>
+          <tbody>
+            <tr><td>Architecture</td><td>Mixer contract on Ethereum</td><td>Private L2 on Ethereum</td><td>Native private L1</td><td>Native private rail on a ZK L1</td></tr>
+            <tr><td>Transfers in shielded pool</td><td>No (single in/out only)</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>Selective disclosure</td><td>None</td><td>Note-level (view keys)</td><td>Yes (view keys, FCD)</td><td>Note-level (view keys planned)</td></tr>
+            <tr><td>Public + private in one tx</td><td>No</td><td>Yes</td><td>No (shielded-only)</td><td>Yes (cross-rail)</td></tr>
+            <tr><td>Mainnet status<sup class="fn">2</sup></td><td>Sanctioned</td><td>Live</td><td>Live</td><td>Pre-mainnet</td></tr>
+          </tbody>
+        </table>
+        <p class="mono" style="color:var(--dim); font-size:11.5px; margin-top:-12px;">2. The Tornado entry is included for taxonomic completeness; this brief does not endorse circumventing the OFAC SDN listing of the Tornado contracts.</p>
+
+        <p>The structural advantage of Psy's design over its closest comparable (Aztec) is that the same chain hosts both rails and the same prover handles both proofs. The structural disadvantage is that the user has to opt in — privacy is not the default — which means an empty shielded set is a real adoption risk early on.</p>
+
+        <h3>Naming convention worth pinning down</h3>
+        <p>USDT bridged onto Psy is called <code>USDT_P</code>. The "_P" is the in-network privacy-capable form, not a "Psy token." There is no PSY stablecoin. This is a common source of confusion in third-party writeups; the design intent is that the bridged asset retains its origin's denomination but acquires Psy's privacy and proof properties.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="bridge">
+    <div class="sec-head">
+      <div class="num">§ 06</div>
+      <h2>The bridge <em>problem</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Liquidity</div>
+      <div class="col">
+        <p>The bridge is the most important and least-finished part of the stack. The specification (v0.4.3, in <code>psy-bridge-contracts/BRIDGE_SPEC.md</code>) is complete and unambiguous; the code is at roughly 15% of the implementation surface. Treat this section as a faithful read of the spec, not a description of what's live.</p>
+
+        <h3>The four primary flows</h3>
+
+        <pre class="diagram"><span class="c">DEPOSIT  (L1 → Psy)
+  user → lock(USDT) on L1 Bridge contract
+       ← deposit_id event
+  relayers (M-of-N) observe and co-sign
+  user (or anyone) calls claim_deposit on Psy with the signed receipt
+  Psy contract mints USDT_P to recipient
+
+WITHDRAWAL  (Psy → L1)
+  user → burn(USDT_P) on Psy bridge contract
+  Psy emits a withdrawal commitment, included in a coordinator checkpoint
+  prover service generates a ZK proof of inclusion + correct burn
+  user submits proof to L1 Bridge contract
+  L1 verifies the recursive proof (via SP1/Groth16 adapter) and releases USDT
+
+FORCE WITHDRAWAL  (escape hatch)
+  if the relayer fleet stalls for &gt; 2h
+  user generates the inclusion proof themselves (public prover service)
+  same on-chain verification path; no relayer signatures required
+
+DEPOSIT CANCEL  (uncommitted funds)
+  if a deposit is not claimed within 24h
+  user reclaims the locked USDT on L1 directly</span></pre>
+
+        <h3>Security model</h3>
+        <ul>
+          <li><strong>Checkpoint Root Registry.</strong> An on-chain L1 contract that stores periodic state-root checkpoints from Psy. Withdrawals must reference a checkpoint that the L1 has accepted; this makes L1 an independent state oracle for Psy and removes the need to trust relayers for the cryptographic step.</li>
+          <li><strong>M-of-N relayer signatures.</strong> The fast path uses an off-chain relayer set, but no single relayer can forge a deposit credit; the threshold M is configurable per-asset.</li>
+          <li><strong>Nullifier scheme on L1.</strong> Withdrawals carry a unique nullifier that the L1 records, preventing the same Psy-side burn from being replayed against L1.</li>
+          <li><strong>Public prover service.</strong> Crucially, the proof generation for withdrawals is permissionless. If the operator-run prover service disappears, anyone can run the same code and produce a valid withdrawal proof. This is the censorship-resistance property that distinguishes a real ZK bridge from a multisig.</li>
+        </ul>
+
+        <h3>Why this is the bottleneck</h3>
+        <p>Without the bridge, Psy has a sophisticated execution layer for assets that don't exist on it. The TRON path is the priority leg — TRON dominates global USDT settlement volume and Psy's positioning explicitly targets that flow. The EVM path is the broader integration point. Both legs need:</p>
+        <ol>
+          <li>L1 Solidity (and TVM-equivalent) bridge contracts with verifiers.</li>
+          <li>SP1 / Groth16 circuit adapters wrapping Plonky2 withdrawal proofs.</li>
+          <li>A bot fleet for event listening, relaying, and checkpoint submission.</li>
+          <li>A public prover service for force-withdrawal.</li>
+        </ol>
+        <p>The team's roadmap aligns bridge completion with Q2–Q3 2026. Everything downstream — privacy adoption, x402, the agent tower — is gated on it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="x402">
+    <div class="sec-head">
+      <div class="num">§ 07</div>
+      <h2>x402 and the <em>AI tower</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Distribution</div>
+      <div class="col">
+        <p>The most distinctive product bet in the Psy roadmap is the x402 layer and the agent-economy stack built on it. To evaluate the bet, the protocol is worth understanding briefly:</p>
+
+        <blockquote>x402 is an open payment protocol from Coinbase (with Cloudflare as co-founder of the x402 Foundation) that repurposes the HTTP <span class="mono">402 Payment Required</span> status code into a functional, machine-mediated payment layer. A server returns 402 with a payment requirement in a header; the client signs an authorization; a facilitator service verifies and settles on chain. By early 2026 over 75 M x402 settlements have cleared on Base and Solana, with Google A2A, AWS, and Vercel among the adopters.<cite>x402 Foundation, public adoption telemetry, Q1 2026</cite></blockquote>
+
+        <p>x402 is interesting because it is the first credible standard for <em>machine-to-machine HTTP payments</em>. The relevant question for Psy is: <em>what does adding a Psy facilitator give the protocol that no other network gives it?</em></p>
+
+        <h3>The Psy x402 wedge</h3>
+        <p>Three payment schemes are planned:</p>
+        <table>
+          <thead><tr><th>Scheme</th><th>What it does</th><th>Where Psy is differentiated</th></tr></thead>
+          <tbody>
+            <tr><td><code>exact</code></td><td>Sign a fixed-amount transfer authorization.</td><td>Comparable to Base/Solana implementations; faster finality than L1 EVM.</td></tr>
+            <tr><td><code>upto</code></td><td>Authorize a maximum; settle for metered usage.</td><td>Natural fit for AI inference billing, token-priced APIs.</td></tr>
+            <tr><td><code>private</code></td><td>Settle via the shielded pool with a ZK proof of solvency.</td><td><strong>Unique to Psy.</strong> No other x402-compatible network can offer a payment where the recipient learns the amount but not the payer's identity or balance.</td></tr>
+          </tbody>
+        </table>
+
+        <p>This is the cleanest product slot in the entire roadmap. It's a concrete, narrowly-defined capability — <em>"x402, but anonymous"</em> — that maps to a real, growing surface (agent-mediated payments) and that no incumbent network can match without a comparable shielded execution layer. Whether the slot is commercially large enough to anchor an L1 is a separate question; in the medium term the team's bet is that the AI agent economy generates payment volumes large enough that even a single-digit-percent share is meaningful.</p>
+
+        <h3>The AI tower</h3>
+        <p>Built above x402, the planned stack is:</p>
+        <ul>
+          <li><strong>Agent Wallet SDK.</strong> Spending limits, allowlists, autonomous signing within budget, multi-sig fallback for large payments. The human owner sets the rules; the agent operates inside them.</li>
+          <li><strong>MCP Payment Server.</strong> An MCP-compatible bridge that lets any MCP-aware AI (Claude, GPT, etc.) consume paid tools via x402 negotiated transparently to the underlying model.</li>
+          <li><strong>Agent Marketplace.</strong> An on-chain registry of agent services with reputation scoring and ZK proof-of-delivery for dispute resolution.</li>
+          <li><strong>Automaton runtime.</strong> An autonomous agent execution environment (the existing repo of the same name) ported from EVM/USDC plumbing to Psy-native rails.</li>
+        </ul>
+
+        <p>Honest read: this is the most <em>aspirational</em> part of the roadmap. The implementation is currently 0%; the spec quality is high. The strongest version of the argument is that Psy doesn't need to build the agent ecosystem itself — it needs to be the network that already has the right primitives the moment third parties start building agent products that need private settlement.</p>
+
+        <h3>Why the privacy property matters here, specifically</h3>
+        <p>An agent transacting on a transparent chain leaks:</p>
+        <ul>
+          <li>Its <strong>balance</strong>, which lets counterparties price-discriminate.</li>
+          <li>Its <strong>revenue stream</strong>, which lets competitors target its suppliers.</li>
+          <li>Its <strong>principal</strong>, since address re-use is the norm.</li>
+          <li>Its <strong>spending patterns</strong>, which leak strategy.</li>
+        </ul>
+        <p>None of these are theoretical — they are the exact privacy properties that financial institutions spend large sums to preserve in human-mediated commerce. The thesis is that whatever fraction of commerce moves to agents will demand the same properties as soon as the volumes matter.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="inventory">
+    <div class="sec-head">
+      <div class="num">§ 08</div>
+      <h2>Stack <em>inventory</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Codebase</div>
+      <div class="col wide">
+        <p>The protocol surface is unusually large for a pre-mainnet project. Twenty-plus repositories were inspected for this brief; the table below condenses the inventory and the maturity read at the time of writing.</p>
+
+        <h3>Core protocol</h3>
+        <table>
+          <thead><tr><th>Repo</th><th>Role</th><th>Stack</th><th>Maturity</th></tr></thead>
+          <tbody>
+            <tr><td><code>psy-node</code> / <code>parth-generic-v1</code> / <code>psy-v3</code></td><td>Coordinator, realms, workers, GUTA pipeline.</td><td>Rust · Tokio · Plonky2 · Scylla · NATS · Redis</td><td><span class="tag ok">~85%</span></td></tr>
+            <tr><td><code>psy-prover</code></td><td>Plonky2 proof engine; WASM browser-side prover.</td><td>Rust · Plonky2 · WASM</td><td><span class="tag ok">~85%</span></td></tr>
+            <tr><td><code>psy-compiler</code></td><td>Psy-lang → circuits; LSP; fmt; dargo CLI.</td><td>Rust · LALRPOP · Plonky2</td><td><span class="tag ok">~90%</span></td></tr>
+            <tr><td><code>qedlang-rust</code></td><td>Predecessor compiler (QED-lang).</td><td>Rust</td><td><span class="tag ok">superseded</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3>Privacy and bridge</h3>
+        <table>
+          <thead><tr><th>Repo</th><th>Role</th><th>Stack</th><th>Maturity</th></tr></thead>
+          <tbody>
+            <tr><td><code>private-payments</code></td><td>Shielded pool spec + TS reference client.</td><td>Rust · Plonky2 · TS SDK</td><td><span class="tag wip">~30%</span></td></tr>
+            <tr><td><code>psy-bridge-contracts</code></td><td>Bridge spec v0.4.3, Psy-lang bridge contracts.</td><td>Psy-lang · Solidity (planned)</td><td><span class="tag early">~15%</span></td></tr>
+            <tr><td><code>gnark-plonky2-verifier</code></td><td>Groth16 verifier for Plonky2 (TRON path).</td><td>Go · gnark</td><td><span class="tag wip">~50%</span></td></tr>
+            <tr><td><code>old-gnark-plonky2-verifier</code></td><td>Reference verifier (Poseidon-bridge baseline).</td><td>Go · gnark</td><td><span class="tag wip">~50%</span></td></tr>
+            <tr><td><code>psy-layerzero</code> / <code>psy-lz-oft</code></td><td>LayerZero OFT integration for additional bridge legs.</td><td>Solidity</td><td><span class="tag early">~20%</span></td></tr>
+            <tr><td><code>city-rollup</code></td><td>Plonky2 / Groth16 rollup PoC on Dogecoin.</td><td>Rust · Plonky2</td><td><span class="tag wip">research</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3>User-facing</h3>
+        <table>
+          <thead><tr><th>Repo</th><th>Role</th><th>Stack</th><th>Maturity</th></tr></thead>
+          <tbody>
+            <tr><td><code>psy-wallet</code></td><td>Chrome extension wallet · BIP39 · WASM prover.</td><td>React 19 · Vite · Psy SDK</td><td><span class="tag ok">~85%</span></td></tr>
+            <tr><td><code>psy-web-ide</code> / <code>psy-ide</code></td><td>Browser contract IDE with deploy-and-interact.</td><td>Next.js 16 · Monaco · WASM</td><td><span class="tag ok">~90%</span></td></tr>
+            <tr><td><code>psy-blockchain-explorer</code></td><td>Block / tx / contract explorer; dark theme.</td><td>Next.js · Recharts</td><td><span class="tag ok">~90%</span></td></tr>
+            <tr><td><code>psy-blockchain-explorer-vite</code></td><td>Vite-port of explorer for static deploy.</td><td>Vite · React</td><td><span class="tag ok">~85%</span></td></tr>
+            <tr><td><code>privacy-bridge-demo</code></td><td>End-to-end demo of deposit → shield → unshield.</td><td>React · TS · Playwright</td><td><span class="tag wip">~70%</span></td></tr>
+            <tr><td><code>psy-contract-generator</code></td><td>AI-assisted contract scaffolding.</td><td>Vanilla JS · LLM backend</td><td><span class="tag ok">~85%</span></td></tr>
+            <tr><td><code>psy-faucet</code> / <code>psy-faucet-backend</code></td><td>Testnet faucet UI + backend.</td><td>React · Node</td><td><span class="tag ok">~85%</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3>SDK, indexers, devops</h3>
+        <table>
+          <thead><tr><th>Repo</th><th>Role</th><th>Stack</th><th>Maturity</th></tr></thead>
+          <tbody>
+            <tr><td><code>psy-sdk</code></td><td>TS + Rust SDK; CoordinatorEdgeRpcProvider; WASM prover.</td><td>TS monorepo · Rust · WASM</td><td><span class="tag ok">~80%</span></td></tr>
+            <tr><td><code>psy-indexer</code></td><td>Rust binary that bridges RPC → REST for the explorer.</td><td>Rust</td><td><span class="tag wip">~70%</span></td></tr>
+            <tr><td><code>psy-services</code></td><td>Hosted coordinator / realm / prove-proxy services.</td><td>Rust · Docker</td><td><span class="tag wip">~70%</span></td></tr>
+            <tr><td><code>psy-dev-platform</code></td><td>Project dashboard, tx tracker, contract methods console.</td><td>Next.js · TS</td><td><span class="tag wip">~60%</span></td></tr>
+            <tr><td><code>psy-marketing-backend</code></td><td>Community / marketing API.</td><td>MidwayJS · MongoDB · Redis</td><td><span class="tag ok">~90%</span></td></tr>
+            <tr><td><code>psy-china-community</code></td><td>Bilingual community portal.</td><td>Next.js</td><td><span class="tag wip">~60%</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3>Research, agents, experimental</h3>
+        <table>
+          <thead><tr><th>Repo</th><th>Role</th><th>Stack</th><th>Maturity</th></tr></thead>
+          <tbody>
+            <tr><td><code>automaton</code></td><td>Autonomous AI agent runtime (Conway Automaton).</td><td>TS · SQLite · Viem</td><td><span class="tag ok">~90%</span></td></tr>
+            <tr><td><code>psy-agent-pay</code> / <code>psy-pay-ts</code> / <code>psy-pay-python</code></td><td>Agent payment primitives in TS and Python.</td><td>TS · Python</td><td><span class="tag wip">~50%</span></td></tr>
+            <tr><td><code>psy-mcp-server</code></td><td>MCP transport for agent x402 payments.</td><td>TS</td><td><span class="tag early">~25%</span></td></tr>
+            <tr><td><code>skills</code></td><td>Agent skill library (paid via x402).</td><td>Markdown + YAML</td><td><span class="tag early">~20%</span></td></tr>
+            <tr><td><code>harness</code></td><td>End-to-end test harness across the stack.</td><td>TS</td><td><span class="tag wip">~50%</span></td></tr>
+          </tbody>
+        </table>
+
+        <p>The overall read: the parts a user touches (wallet, IDE, explorer, compiler) are already at production quality; the parts that determine whether <em>real money</em> flows (bridge, privacy circuits, x402 facilitator) are explicitly the next 12 months of work. This is the correct order for a ZK chain, but it does mean a third party should weight ecosystem traction lightly until the bridge is live and audited.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="performance">
+    <div class="sec-head">
+      <div class="num">§ 09</div>
+      <h2>The performance <em>argument</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Throughput</div>
+      <div class="col">
+        <p>Psy's public-facing performance posture, articulated by founder Carter Feldman in a 2025 Cointelegraph interview and echoed in the Chinese-language introduction in <code>psy-v3</code>, is unusually careful:</p>
+
+        <blockquote>TPS is the <em>second</em> benchmark of blockchain performance, not the first. The first benchmark is economic — transaction fees, real demand, network health. A high TPS measured on a single node or on a testnet doesn't say anything about a chain's behavior in production, where transactions must be relayed and verified by many independent nodes. Capacity claims should follow demand evidence, not precede it.<cite>Carter Feldman / Psy team, public statements</cite></blockquote>
+
+        <p>This is a more defensible posture than the headline-TPS marketing common to alt-L1s, but it has rhetorical costs. The team is explicitly choosing not to publish a "we did 1 M TPS in testnet" number — even though the architecture is the kind that could plausibly produce one — because they regard the number as misleading without the multi-node verification context.</p>
+
+        <p>The architectural argument for why the design is fast remains:</p>
+        <ul>
+          <li>Verification cost is <em>O(1) in transactions per block</em>, by recursion. Nodes do not re-execute.</li>
+          <li>Execution cost is horizontally parallel across realms. Each realm scales independently.</li>
+          <li>Proving cost is parallel across workers, and is the rate-limiting step. GPU-accelerated proving moves the limit by a meaningful constant.</li>
+          <li>Network cost dominates at very large realm counts, but is mediated by NATS JetStream pub/sub rather than by mesh gossip.</li>
+        </ul>
+
+        <p>The honest read: the design plausibly delivers extreme throughput at the system level (realm × users-per-realm × ops-per-user), but block latency is set by proof generation time and is meaningfully higher than EVM L1 or BFT alt-L1s — testnet observations of 10–30s blocks under real proof load. This is fine for payments and contract execution; it is not where Psy will win against low-latency trading venues.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="risks">
+    <div class="sec-head">
+      <div class="num">§ 10</div>
+      <h2>Open questions and <em>risks</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Honest</div>
+      <div class="col">
+
+        <div class="callout warn">
+          <h4>Bridge concentration risk</h4>
+          <p style="margin:0;">Until the L1 contracts ship and the relayer fleet is decentralized, all bridge security is custodial-equivalent. The spec's design is sound; the implementation is not yet on the ground. This is the single biggest gap between the protocol's positioning and its operational reality.</p>
+        </div>
+
+        <div class="callout warn">
+          <h4>Circuit fingerprint coupling</h4>
+          <p style="margin:0;">The WASM browser prover and the node prover must share a byte-identical verifying key. Every protocol upgrade that touches a circuit forces a coordinated rollout across the wallet, the prover service, the SDK, and the node binaries. The repo has a documented incident of WASM/node drift causing transaction failures. This is an operational risk that doesn't go away — it becomes a release-engineering discipline.</p>
+        </div>
+
+        <div class="callout warn">
+          <h4>Privacy adoption problem</h4>
+          <p style="margin:0;">A shielded pool is only as private as the set of notes it holds. If 99% of value stays on the transparent rail, the shielded set is small and linkability rises. The "private x402" wedge is the natural answer — agent-mediated commerce is the demand vector that fills the pool — but it requires the agent ecosystem to actually materialize at volume.</p>
+        </div>
+
+        <div class="callout warn">
+          <h4>The bespoke-language tax</h4>
+          <p style="margin:0;">Psy-lang is technically well-founded but commercially expensive. Every dApp is greenfield; there is no Solidity-port shortcut. The compiler team has built the right primitives (LSP, fmt, package manager, AI-assisted contract generator) to soften the curve, but the developer-onboarding cost is structurally higher than an EVM-compatible chain. Mitigation: the contract generator and dev-platform tooling explicitly target this gap, with LLM-assisted contract authoring as a first-class feature.</p>
+        </div>
+
+        <div class="callout warn">
+          <h4>Regulatory exposure of shielded payments</h4>
+          <p style="margin:0;">The Tornado precedent looms over every chain shipping a shielded pool in 2026. Psy's architecture supports selective disclosure (view-key style), which is the route most aligned with regulatory accommodation; whether the team ships that capability before mainnet — and whether it is sufficient for jurisdictional acceptance — is open.</p>
+        </div>
+
+        <div class="callout warn">
+          <h4>The "AI tower" is unbuilt</h4>
+          <p style="margin:0;">The x402 facilitator, the agent SDK, the marketplace, the MCP payment server — all are at 0%. The narrative is compelling; the execution risk is real. The reasonable third-party read is that the AI tower should be viewed as <em>option value</em>, not as a delivered capability. The base case for Psy must stand on its execution and privacy properties alone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================== -->
+  <section id="bottom">
+    <div class="sec-head">
+      <div class="num">§ 11</div>
+      <h2>Bottom <em>line</em>.</h2>
+    </div>
+    <div class="sec-body">
+      <div class="anchor">Outlook</div>
+      <div class="col">
+        <p class="lede">Psy Protocol is the most fully-realized small-team implementation of a recursive-ZK execution layer this brief has examined. The cryptographic taste is consistent; the architectural choices are coherent; the codebase is large, working, and unusually self-contained for a project at this stage.</p>
+
+        <p>The strategic question is not whether the protocol is sound — it appears to be — but whether the team can translate technical credibility into <em>economic gravity</em> in the 12–18 months between bridge launch and mainnet. The base requirements are clear:</p>
+
+        <ol>
+          <li><strong>Ship the bridge.</strong> TRON first, EVM second. Until USDT_P exists on Psy with credible cross-chain liquidity, nothing else matters commercially.</li>
+          <li><strong>Get one privacy product to volume.</strong> A single high-volume application of the shielded pool — agent payments, professional services, anonymous content monetization — is worth more than a roadmap of ten.</li>
+          <li><strong>Land an x402 facilitator with one anchor customer.</strong> The unique slot Psy occupies in the x402 ecosystem is the "private" scheme. Securing one substantial counterparty — an AI inference provider, an MCP server operator, an agent platform — would convert the architectural argument into a distribution argument.</li>
+        </ol>
+
+        <p>If the first happens, Psy becomes a real chain. If the first two happen, Psy becomes a differentiated chain. If all three happen, Psy is in the small set of ZK-native networks with both technical depth and a defensible product wedge in the AI-era payment surface.</p>
+
+        <p>The work between now and mainnet is large but legible. This is, in the end, a constructive read: the bets are well-chosen, the team has shipped a remarkable amount of infrastructure, and the parts that are missing are the parts a competent team can build. The next eighteen months are the test.</p>
+
+        <p style="font-family:var(--serif); font-style:italic; color:var(--muted); margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); font-size:15px;">— Psyverse Brief, 16 May 2026. This document is an independent third-party reading based on publicly available repositories, specifications, and team statements. It is not an endorsement, investment advice, or an official statement of the Psy team. The author has no position in any token associated with the protocol.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="row">
+    <div style="font-family:var(--mono); font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.12em;">ψ Brief</div>
+    <div>
+      <h5>Subject</h5>
+      <ul>
+        <li><a href="https://psy.xyz" rel="noopener">Psy Protocol — official site</a></li>
+        <li><a href="https://github.com/QEDProtocol" rel="noopener">QEDProtocol on GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Method</h5>
+      <ul>
+        <li>~20 repository corpus, read directly</li>
+        <li>Spec docs at v0.4.3 (bridge)</li>
+        <li>Public team statements + interviews</li>
+      </ul>
+    </div>
+    <div>
+      <h5>Series</h5>
+      <ul>
+        <li><a href="https://psyverse.fun">psyverse.fun</a> — the index</li>
+        <li><a href="https://psyverse.fun/atlas.html">atlas</a> — every brief</li>
+      </ul>
+    </div>
+    <div class="colophon">
+      Set in Newsreader (display), Inter (body), and JetBrains Mono (technical). Drafted on a 1 M-context model session against the working litepaper corpus and the Psy team's public output. Errors are the author's; corrections welcome via the Psyverse home page.
+    </div>
+  </div>
+</footer>
+
+<script src="https://analytics-dashboard-two-blue.vercel.app/tracker.js" defer></script>
+
+</body>
+</html>
